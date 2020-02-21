@@ -1,0 +1,30 @@
+apiVersion: config.istio.io/v1alpha2
+kind: listchecker
+metadata:
+  name: preferencewhitelist
+  namespace: $NAMESPACE
+spec:
+# providerUrl file format: ["customer", "XXX", "YYY"]
+#  providerUrl: https://raw.githubusercontent.com/dsanchor/istio-tutorial/master/whitelist/preference
+  overrides: ["customer"]
+  blacklist: false
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: listentry
+metadata:
+  name: preferencesource
+  namespace: $NAMESPACE
+spec:
+  value: source.labels["app"]
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: rule
+metadata:
+  name: checkfromcustomer
+  namespace: $NAMESPACE
+spec:
+  match: destination.labels["app"] == "preference"
+  actions:
+  - handler: preferencewhitelist.listchecker
+    instances:
+    - preferencesource.listentry

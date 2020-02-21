@@ -1,0 +1,36 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: customer
+  namespace: ${NAMESPACE}
+  labels:
+    group: tutorial
+spec:
+  gateways:
+  - customer-gw
+  hosts:
+  - customer-${NAMESPACE}-istio-system.${APP_SUBDOMAIN}
+  http:
+  - route:
+    - destination:
+        host: customer
+        subset: version-v1
+      weight: 100
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: customer
+  namespace: ${NAMESPACE}
+  labels:
+    group: tutorial
+spec:
+  host: customer
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        httpHeaderName: X-Customer-Session
+  subsets:
+  - labels:
+      version: v1
+    name: version-v1

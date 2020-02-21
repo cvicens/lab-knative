@@ -1,0 +1,12 @@
+# AUTHORIZATION/RBAC (only one per Mesh)
+apiVersion: rbac.istio.io/v1alpha1
+kind: RbacConfig
+metadata:
+  name: default
+  labels:
+    group: global
+    creation: demo
+spec:
+  mode: 'ON_WITH_INCLUSION'
+  inclusion:
+    namespaces: ["project1","project2","project3","project4","project5","project6","project7","project8","project9","project10","project11","project12","project13","project14","project15","project16","project17", "project18","project19","project20"]

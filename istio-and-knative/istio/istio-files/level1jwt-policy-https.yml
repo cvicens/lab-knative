@@ -1,0 +1,17 @@
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: level1jwt
+spec:
+  targets:
+  - name: customer
+  - name: partner
+  peers:
+  - mtls:
+  origins:
+  - jwt:
+      issuer: https://keycloak-sso.${SUBDOMAIN}/auth/realms/istio
+      jwksUri: https://keycloak-sso.${SUBDOMAIN}/auth/realms/istio/protocol/openid-connect/certs
+      audiences:
+      - customer-tutorial  
+  principalBinding: USE_ORIGIN

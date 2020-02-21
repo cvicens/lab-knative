@@ -1,0 +1,253 @@
+
+
+	export SANDBOX_ID=453
+	export KNATIVE_LABS_HOME=/home/dsanchor/projects/SANTANDER/knative
+	export ISTIO_LABS_HOME=/home/dsanchor/projects/SANTANDER/istio
+        export APPS_NAMESPACE=labs
+        export SUBDOMAIN=apps.cluster.sandbox453.opentlc.com
+
+	Cluster: https://console-openshift-console.apps.cluster.sandbox453.opentlc.com
+	Api: oc login -u redhat -p 'redhat!1' https://api.cluster.sandbox453.opentlc.com:6443
+	Kiali: https://kiali-istio-system.apps.cluster.sandbox453.opentlc.com/console/graph/namespaces
+
+        - Brief intro ppt => https://docs.google.com/presentation/d/1NY8RLr1rPivioJMcLdMaxWKSXst3-aecp7c2vkQmrqA/edit#slide=id.p
+
+	- Show installation
+
+		Istio => istio-knative-ingressgateway
+		
+		knative => serving
+
+		Ensure Knative istio GW has proper selector (istio:  knative-ingressgateway)
+
+	NOT SINCE 1.2.0	
+
+
+	- Apps deployed with istio: 
+
+		cd $ISTIO_LABS_HOME
+		./deploy-apps.sh labs apps.cluster.sandbox453.opentlc.com
+
+		Test: curl -v customer-labs-istio-system.apps.cluster.sandbox453.opentlc.com
+
+	Always have this one in one side of the screen:  watch -n2 "oc get pods -n labs | grep -v Completed"
+		
+        - demo
+
+
+		NOT SINCE 1.2.0
+				- Delete customer: 
+
+					oc delete all -l app=customer -n labs 
+					cat $ISTIO_LABS_HOME/istio-files/customer-ingress_mtls.yml | APP_SUBDOMAIN=$(echo $SUBDOMAIN) NAMESPACE=$(echo $APPS_NAMESPACE) envsubst | oc delete -f -
+
+				- Deploy customer (with defaults)
+
+					cd $KNATIVE_LABS_HOME
+
+					./deploy-customer-0.sh $APPS_NAMESPACE $SUBDOMAIN
+
+					Test
+
+					watch -n3 curl -v customer.labs.apps.cluster.sandbox453.opentlc.com
+
+					Show kiali.. new elements now.
+				
+					Show Serverless in OCP 
+
+
+					Show Virtualservice 
+
+					Stop and wait (1.20seg) for pod to be terminating.... then, test again and see it going back to live
+
+					Explain Activator proxy when idle services 
+
+		STARTS HERE:
+
+		
+
+		- Deploy all services 
+		
+
+			oc new-project labs
+
+			(move to developer view)
+
+			cat knative-files/all-services.yml
+
+			./deploy-all-services.sh $APPS_NAMESPACE $SUBDOMAIN
+
+
+			curl -v customer.labs.apps.cluster.sandbox453.opentlc.com
+
+			Stop and wait 1m20s. Test again
+
+			
+
+			Move to developer console
+
+			IMPORTANT Show => https://github.com/knative/serving/blob/master/docs/scaling/DEVELOPMENT.md#context
+
+
+		- Deploy customer to autosale based on concurrency (10) from 1 to 10 pods 
+			
+			./deploy-customer-autoscale.sh $APPS_NAMESPACE $SUBDOMAIN
+
+			See revisions.. new one
+
+			Test
+
+			hey -c 100 -z 20s http://customer.labs.apps.cluster.sandbox453.opentlc.com
+	
+			Stop and wait (1.20seg) for pod to be terminating.... then, test again and see it going back to live
+
+
+		- Deploy customer to autoscale based on cpu (70%) from 1 to 10 pods 
+
+			./deploy-customer-autoscale-cpu.sh $APPS_NAMESPACE $SUBDOMAIN
+
+			See revisions.. new one
+
+			Check hpa metrics in different terminal: watch -n2 oc get hpa customer-v3 -n $APPS_NAMESPACE
+			
+			Test
+
+			hey -c 5 -z 60s http://customer.labs.apps.cluster.sandbox453.opentlc.com
+
+
+			NOTE --horizontal-pod-autoscaler-downscale-stabilization: The value for this option is a duration that specifies how long the autoscaler has to wait before another downscale operation can be performed after the current one has completed. The default value is 5 minutes (5m0s).
+			
+		
+		- Deploy new version with traffic split
+
+			./deploy-customer-traffic-split.sh $APPS_NAMESPACE $SUBDOMAIN
+
+			See revisions.. new one
+			See routes (both ocp and knative ones)
+			see istio virtual service
+			
+			Test
+
+			hey -c 5 -z 60s http://customer.labs.apps.cluster.sandbox453.opentlc.com
+
+		- Cli (kn)			
+
+
+	kn service create recommendation --force --image=quay.io/dsanchor/recommendation:vertx --revision-name=recommendation-v2 --concurrency-limit=10 --annotation=sidecar.istio.io/inject=true --label=serving.knative.dev/visibility=cluster-local --env=VERSION=v2
+
+
+	kn service update recommendation --image=quay.io/dsanchor/recommendation:vertx --revision-name=recommendation-v3 --concurrency-limit=10 --annotation=sidecar.istio.io/inject=true --label=serving.knative.dev/visibility=cluster-local --tag recommendation-v2=current --tag recommendation-v3=candidate --tag @latest=latest  --traffic recommendation-v2=50,recommendation-v3=50 --env=VERSION=v3
+
+
+
+
+Eventing
+
+
+	Show installation:
+
+	- kafka (via amqstreams) => cluster and topic (10 partitions) (oc  -n kafka get kafkas.kafka.strimzi.io  //  oc  -n kafka get kafkatopics.kafka.strimzi.io)
+	- knative-eventing (via operator) 
+        - knative-sources (see kafka-controller)
+
+	Kafka como eventsource:
+
+
+	- Deploy Knative Svc for consuming CloudEvents
+
+		oc apply -f knative-files/event-display-ksvc.yml -n labs
+
+	- Deploy kafka source
+
+		oc apply -f knative-files/kafka-source.yml -n labs
+
+		show logs in kafka-source
+default-kn2-ingress-kn-channel
+
+Actions
+	
+	- Test: 
+
+		oc -n kafka run kafka-producer -ti --image=strimzi/kafka:0.14.0-kafka-2.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list knative-demo-kafka-bootstrap.kafka:9092 --topic eventing
+
+		{"message" : "Hi Innovation Labs!!"}
+
+
+
+	Broker (in memory channel)
+
+	- Create default broker in namespace
+
+	 	oc label namespace labs knative-eventing-injection=enabled
+
+	- Create trigger
+
+		oc apply -f knative-files/demo-trigger.yml -n labs
+
+	- Expose default broker 
+
+		oc expose svc default-broker -n labs
+
+		and test:
+
+		curl -v http://default-broker-labs.apps.cluster.sandbox453.opentlc.com/ -H "Ce-specversion: 0.3" -H "Ce-Type: dev.knative.demo" -H "Ce-Id: 45a8b444-3213-4758-be3f-540bf93f85ff" -H "Ce-Source: dev.knative.demo/simplesource" -H 'Content-Type: application/json' -d '{ "message": "Hi Innovation Labs" }'
+
+
+	- Create additional service 
+
+		oc apply -f knative-files/demo-trigger-wide.yml -n labs
+
+
+		Test modifying Source
+
+	- Create KafkaSrouce+Sink to channel (los dos log events los van a recibir via channel)
+
+		oc apply -f knative-files/kafka-source-to-channel.yml -n labs
+
+		Change old demo trigger (to remove filters...)
+
+		oc apply -f  knative-files/demo-trigger-2.yml -n labs
+
+
+	- Test
+
+		oc -n kafka run kafka-producer -ti --image=strimzi/kafka:0.14.0-kafka-2.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list knative-demo-kafka-bootstrap.kafka:9092 --topic eventing
+
+		{"message" : "Hi Innovation Labs!!"}
+		
+
+
+NOTAS
+	
+
+
+	https://strimzi.io/2019/09/26/knative.html
+
+	https://knative.dev/docs/eventing/samples/kafka/source/index.html
+	https://knative.dev/docs/eventing/samples/kafka/channel/index.html
+	
+
+	Deploying an application
+Knative provides a number of different ways to consume events from Apache Kafka. The simplest, which will be shown here, is to connect a Kafka EventSource directly to a Knative Serving application. Others include decoupling the Source and Service using a Channel (more applicable when the source is not a messaging platform itself) and routing via an internal Broker.
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

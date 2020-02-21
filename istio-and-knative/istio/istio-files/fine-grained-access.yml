@@ -1,0 +1,72 @@
+apiVersion: rbac.istio.io/v1alpha1
+kind: ServiceRole
+metadata:
+  name: ingress
+  namespace: ${NAMESPACE}
+spec:
+  rules:
+  - services: ["customer.${NAMESPACE}.svc.cluster.local","partner.${NAMESPACE}.svc.cluster.local"]
+    methods: ["*"]
+#  - services: ["*"]
+#    methods: ["*"]
+#    constraints:
+#    - key: destination.labels[authorization]
+#      values: ["allow"]
+---
+apiVersion: rbac.istio.io/v1alpha1
+kind: ServiceRole
+metadata:
+  name: preference-viewer
+  namespace: ${NAMESPACE}
+spec:
+  rules:
+  - services: ["preference.${NAMESPACE}.svc.cluster.local"]
+    methods: ["GET"]
+---
+apiVersion: rbac.istio.io/v1alpha1
+kind: ServiceRole
+metadata:
+  name: recommendation-viewer
+  namespace: ${NAMESPACE}
+spec:
+  rules:
+  - services: ["recommendation.${NAMESPACE}.svc.cluster.local"]
+    paths: ["/"]
+    methods: ["GET"]
+---
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRoleBinding
+metadata:
+  name: ingress-binding
+  namespace: ${NAMESPACE}
+spec:
+  subjects:
+  - user: "cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+  roleRef:
+    kind: ServiceRole
+    name: ingress
+---
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRoleBinding
+metadata:
+  name: preference-viewer-binding
+  namespace: ${NAMESPACE}
+spec:
+  subjects:
+  - user: "cluster.local/ns/${NAMESPACE}/sa/level1"
+  roleRef:
+    kind: ServiceRole
+    name: preference-viewer
+---
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRoleBinding
+metadata:
+  name: recommendation-viewer-binding
+  namespace: ${NAMESPACE}
+spec:
+  subjects:
+  - user: "cluster.local/ns/${NAMESPACE}/sa/level2"
+  roleRef:
+    kind: ServiceRole
+    name: recommendation-viewer
+---

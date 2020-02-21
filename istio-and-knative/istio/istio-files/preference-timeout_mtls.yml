@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: preference
+  labels:
+    group: preference
+spec:
+  hosts:
+  - preference
+  http:
+  - route:
+    - destination:
+        host: preference
+        subset: version-v1
+      weight: 100
+    timeout: 2s
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: preference
+  labels:
+    group: preference
+spec:
+  host: preference
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+  subsets:
+  - labels:
+      version: v1
+    name: version-v1

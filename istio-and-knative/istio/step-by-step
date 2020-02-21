@@ -1,0 +1,164 @@
+
+
+	Cluster: https://console-openshift-console.apps.cluster.sandbox1405.opentlc.com
+	Api: oc login -u redhat -p 'redhat!1' https://api.cluster.sandbox1405.opentlc.com:6443
+	Kiali: https://kiali-istio-system.apps.cluster.sandbox1405.opentlc.com/console/graph/namespaces
+
+        - Brief intro => https://docs.google.com/presentation/d/1y87h5FyVHfQmGAoGbaV22DwkbNBDTG7n4_JhM-uYG0E/edit#slide=id.g4b10774a76_0_558
+		Long (and very old) one => https://docs.google.com/presentation/d/1hhH4DPxRBu77QnpolUwU2viOeN8fgu6OvyXIctWqDJM/edit
+			+ hands-on (very old) => https://docs.google.com/presentation/d/1vRU54IQ0zc5Vu8bPLBXyjkvyaJIb-FnRhYIothUr1Vs/edit#slide=id.g56aa1688c6_4_0
+	- Control plane? show it/describe it
+        - demo
+		- INTRO: deploy apps => ./deploy-apps.sh labs apps.cluster.sandbox1405.opentlc.com
+			- see autoinjection 
+                        - do some tests/curls
+                    	- check Kiali graph, service (metrics and traces)
+
+		- Blue/Green: deploy recommendation v2 => ./deploy-recommendation-v2.sh labs 
+                        - traffic has no istio routing, so v1 and v2 receives the same % based on k8s service routing
+			- apply routing via webconsole => https://kiali-istio-system.apps.cluster.sandbox1405.opentlc.com/console/services?duration=60&namespaces=labs
+
+		- Canary: deploy customer v2 => ./deploy-customer-v2.sh labs 
+                        - In this case, we already created a rule for ingress traffic. so no traffic is goign to v2. Check graph => https://kiali-istio-system.apps.cluster.sandbox1405.opentlc.com/console/graph/namespaces
+			- Show canary based on header: show content of cat $ISTIO_LAB/customer-user-header_mtls.yml
+			- Apply canary based on header: ./set-canary-customer.sh labs apps.cluster.sandbox1405.opentlc.com  
+
+				Check graph => https://kiali-istio-system.apps.cluster.sandbox1405.opentlc.com/console/graph/namespaces
+
+				For v2 => watch -n2 "curl -v -H 'user: david'   customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com"
+
+				For v1 =>  watch -n2 "curl -v customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com"     
+
+		- Traffic mirror/dark launch:  ./set-traffic-mirror.sh labs apps.cluster.sandbox1405.opentlc.com
+
+			watch -n2 "curl -v customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com"  
+
+				Check graph => https://kiali-istio-system.apps.cluster.sandbox1405.opentlc.com/console/graph/namespaces
+
+		- Whitelist/Blacklist
+
+				watch -n2 "curl -v customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com"
+				
+				watch -n2 "curl -v partner-labs-istio-system.apps.cluster.sandbox1405.opentlc.com"
+
+				Check graph => https://kiali-istio-system.apps.cluster.sandbox1405.opentlc.com/console/graph/namespaces
+
+			- Whitelist: Allow only traffic from customer to preference => ./set-whitelist.sh labs
+
+				Result: partner => 403 PERMISSION_DENIED:preferencewhitelist.listchecker.labs:partner is not whitelisted
+
+				./disable-whitelist.sh labs
+
+			- Blacklist: Allow only traffic from partner to preference => ./set-blacklist.sh labs
+
+				Result => customer => Error: 403 - PERMISSION_DENIED:denypartnerhandler.denier.labs:Not allowed
+
+				./disable-blacklist.sh labs
+
+		- Rate limits (2tps customer, 5tps partner) => ./set-ratelimit.sh labs
+
+			./test.sh customer-labs-istio-system.apps.cluste ./disable-preference-policies.sh labsr.sandbox1405.opentlc.com
+
+			./test.sh partner-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+				 ./disable-ratelimit.sh labs
+
+		- Inject random 5xx errors => ./set-random-errors.sh labs  (NOTE: retrying automatically??: https://github.com/istio/istio/issues/13851)
+
+			./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+				 ./disable-recommendation-policies.sh labs
+
+		- Inject delay in recommendation (3s 50%) => ./set-delay.sh labs
+
+			./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+				 ./disable-recommendation-policies.sh labs
+
+		- Timeouts. Configure delays first. Add 2s timeout in preference => /set-timeout.sh labs  (NOTE: retrying automatically??: https://github.com/istio/istio/issues/13851)
+
+			./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+				 ./disable-preference-policies.sh labs
+
+		- Retries. Set 3 retries for customer service (errors 5xx): ./set-retries.sh labs apps.cluster.sandbox1405.opentlc.com
+		
+			Ensure errors in recommendation => ./set-random-errors.sh labs		
+		
+			./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+
+		- CB: limit recommendation v2 to 1 connection and 1 request: ./set-cb-recommendation.sh labs
+		
+			seq 1 100 | xargs -n1 -P100 ./test.sh partner-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+			Check response codes in kiali (from preference to recommendation)
+
+
+		- RBAC: ./set-rbac-mesh.sh
+
+			Test no access:
+		
+			./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+			Enable temporal access: ./set-temporal-rbac-access.sh labs
+
+			./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+				
+			Disable temporal access: ./disable-temporal-rbac-access.sh labs
+
+			
+		- Fine grained service-to-service
+
+			Create fine-grained roles and bindings: ./set-fine-grained-rbac-access.sh labs   (so only ingress can access to customer and partner)
+
+				./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+				./test.sh partner-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+			Create 2 service accounts: ./create-2level-service-accounts.sh labs
+
+			Set first level (give access to customer and partner to preference)
+
+				./set-level1-service-accounts.sh labs
+
+				Test
+
+				./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+				./test.sh partner-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+			Set first level (give access to preference to recommendation)
+
+				./set-level2-service-accounts.sh labs
+
+				Test
+
+				./test.sh customer-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+
+				./test.sh partner-labs-istio-system.apps.cluster.sandbox1405.opentlc.com
+				
+
+
+
+
+
+	Check:
+
+		global retries to disable it
+		error management in preference
+
+
+	If needed:
+
+		Scale dcs => oc get dc --no-headers -n labs | awk '{print $1}' | xargs -I{} oc scale dc/{} --replicas 2 -n labs
+
+	Consume certs
+
+	cert-chain.pem is Envoy’s cert that needs to be presented to the other side. key.pem is Envoy’s private key paired with Envoy’s cert in cert-chain.pem. root-cert.pem is the root cert to verify the peer’s cert. In this example, we only have one Citadel in a cluster, so all Envoys have the same root-cert.pem.
+
+	oc exec $(oc get pod -l app=customer -o jsonpath={.items..metadata.name}) -c istio-proxy -- cat /etc/certs/cert-chain.pem | openssl x509 -text -noout 
+	
+	oc exec $(oc get pod -l app=customer -o jsonpath={.items..metadata.name}) -c istio-proxy -- cat /etc/certs/cert-chain.pem | openssl x509 -text -noout  | grep 'Subject Alternative Name' -A 1
+
+

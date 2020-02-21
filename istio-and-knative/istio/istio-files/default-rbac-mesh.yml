@@ -1,0 +1,12 @@
+# AUTHORIZATION/RBAC (only one per Mesh). Apply only on $DEMO_NAMESPACE
+apiVersion: rbac.istio.io/v1alpha1
+kind: RbacConfig
+metadata:
+  name: default
+  labels:
+    group: global
+    creation: demo
+spec:
+  mode: 'ON_WITH_INCLUSION'
+  inclusion:
+    namespaces: ["${NAMESPACE}"]

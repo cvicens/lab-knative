@@ -1,0 +1,13 @@
+apiVersion: "rbac.istio.io/v1alpha1"
+kind: ServiceRoleBinding
+metadata:
+  name: level1jwt-binding
+spec:
+  subjects:
+#  - user: "cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+#    properties:
+   - properties:
+      request.auth.claims[preferred_username]: "demo"
+  roleRef:
+    kind: ServiceRole
+    name: ingress

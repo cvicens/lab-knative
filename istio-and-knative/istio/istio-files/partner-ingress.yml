@@ -1,0 +1,68 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: partner-ingressgateway
+  namespace: istio-system
+  labels:
+    group: tutorial
+spec:
+  host: partner-${NAMESPACE}-istio-system.${APP_SUBDOMAIN}
+  port:
+    targetPort: http2
+  to:
+    kind: Service
+    name: istio-ingressgateway
+    weight: 100
+  wildcardPolicy: None
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: partner-gw
+  namespace: ${NAMESPACE}
+  labels:
+    group: tutorial
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - partner-${NAMESPACE}-istio-system.${APP_SUBDOMAIN}
+    port:
+      name: http2
+      number: 80
+      protocol: HTTP2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: partner
+  namespace: ${NAMESPACE}
+  labels:
+    group: tutorial
+spec:
+  gateways:
+  - partner-gw
+  hosts:
+  - partner-${NAMESPACE}-istio-system.${APP_SUBDOMAIN}
+  http:
+  - route:
+    - destination:
+        host: partner
+        subset: version-v1
+      weight: 100
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: partner
+  namespace: ${NAMESPACE}
+  labels:
+    group: tutorial
+spec:
+  host: partner
+  subsets:
+  - labels:
+      version: v1
+    name: version-v1
+---
