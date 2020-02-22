@@ -58,6 +58,10 @@ slides_url: %slides_url%
 
 username: %username%
 
+ocp_username: %ocp_username%
+
+ocp_password: %ocp_password%
+
 project_namespace: %project_namespace%
 
 cluster_subdomain: %cluster_subdomain%

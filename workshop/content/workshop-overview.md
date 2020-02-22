@@ -1,1 +1,1 @@
-This is the initial landing page for your workshop. Include in this page a description of what your workshop is about.
+The main purpose of this lab is guide through the use of Knative to deploy services in a serverless fashion.

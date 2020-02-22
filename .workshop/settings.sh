@@ -1,3 +1,9 @@
+PROJECT_NAME=workshops
+
+OCP_USERNAME=user1
+OCP_PASSWORD=openshift
+USERID=1
+
 WORKSHOP_NAME=lab-knative
 #WORKSHOP_IMAGE=quay.io/cvicensa/lab-knative:0.1
 WORKSHOP_TITLE="Knative Introduction"
@@ -6,5 +12,6 @@ RESOURCE_BUDGET=medium
 MAX_SESSION_AGE=3600
 IDLE_TIMEOUT=300
 
+SPAWNER_APPLICATION=lab-knative
 SPAWNER_MODE=hosted-workshop
 SPAWNER_VERSION=7.0.1

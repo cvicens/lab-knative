@@ -26,5 +26,5 @@ Update Workshop Scripts => git submodule update --remote
 
 
 ## Local Development
-docker build -t lab-knative .
-docker run --rm -p 10080:10080 lab-knative
+docker build -t lab-knative:0.2 .
+docker run --rm -p 10080:10080 -e CLUSTER_SUBDOMAIN=apps.cluster-kharon-ba75.kharon-ba75.example.opentlc.com -e OCP_USERNAME=user1 -e USERID=1 -e OCP_PASSWORD=openshift -e KUBERNETES_SERVICE_HOST=api.cluster-kharon-ba75.kharon-ba75.example.opentlc.com -e KUBERNETES_SERVICE_PORT=6443 --name lab-knative lab-knative:0.2

@@ -1,3 +1,22 @@
+config:
+    vars:
+    - name: userid
+      value: undefined
+      aliases:
+      - USERID
+    - name: ocp_username
+      value: undefined
+      aliases:
+      - OCP_USERNAME
+    - name: ocp_password
+      value: undefined
+      aliases:
+      - OCP_PASSWORD
+    - name: KUBERNETES_SERVICE_HOST
+      value: undefined
+    - name: KUBERNETES_SERVICE_PORT
+      value: undefined
+
 modules:
     workshop-overview:
         name: Workshop Overview
@@ -5,8 +24,14 @@ modules:
     setup-environment:
         name: Setup Environment
         exit_sign: Start Workshop
+    exercises/01-deploy-all-services:
+        name: Deploy All Services
+    exercises/02-autoscale-requests:
+        name: Autoscale Customer Based On Requests
     exercises/01-sample-content:
         name: Sample Content
     workshop-summary:
         name: Workshop Summary
         exit_sign: Finish Workshop
+
+        
