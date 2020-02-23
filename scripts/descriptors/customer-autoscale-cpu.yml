@@ -7,7 +7,6 @@ spec:
     metadata:
       name: customer-v3
       annotations:
-        sidecar.istio.io/inject: "true"
         # Standard Kubernetes CPU-based autoscaling.
         autoscaling.knative.dev/class: hpa.autoscaling.knative.dev
         autoscaling.knative.dev/metric: cpu

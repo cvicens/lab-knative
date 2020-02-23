@@ -17,7 +17,6 @@ fi
 
 echo ""
 echo "*** Deploying customer kservice with latest version (v4) getting 50% of the traffic. V3 will get the other 50%" 
-read -s -n 1 key
 cat $SCRIPTS_DIR/customer-traffic-split.yml | NAMESPACE=$(echo $APPS_NAMESPACE) envsubst | oc apply -f - -n $APPS_NAMESPACE
 
 echo ""

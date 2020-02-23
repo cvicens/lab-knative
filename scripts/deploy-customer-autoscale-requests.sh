@@ -18,11 +18,3 @@ fi
 echo ""
 echo "*** Deploying customer kservice with autoscale (10 concurrent request per pod: from 1 to 10 pods)" 
 cat $SCRIPTS_DIR/customer-autoscale-requests.yml | NAMESPACE=$(echo $APPS_NAMESPACE) envsubst | oc apply -f - -n $APPS_NAMESPACE
-
-echo ""
-echo " **************************************************************************************************************************** "
-echo ""
-echo "    Test customer service: hey -c 100 -z 20s http://customer.$APPS_NAMESPACE.$SUBDOMAIN                                                      "
-echo ""
-echo " **************************************************************************************************************************** "
-echo ""

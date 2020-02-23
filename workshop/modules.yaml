@@ -27,7 +27,11 @@ modules:
     exercises/01-deploy-all-services:
         name: Deploy All Services
     exercises/02-autoscale-requests:
-        name: Autoscale Customer Based On Requests
+        name: Autoscale Based On Requests
+    exercises/03-autoscale-cpu:
+        name: Autoscale Based On CPU
+    exercises/04-traffic-split:
+      name: Split Traffic
     exercises/01-sample-content:
         name: Sample Content
     workshop-summary:

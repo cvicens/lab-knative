@@ -1,6 +1,19 @@
 FROM quay.io/openshifthomeroom/workshop-dashboard:4.2.2
 
+ENV STAGE_DIR=/tmp/stage BIN_DIR=/usr/local/bin \
+    KNATIVE_CLI_VERSION=0.2.0 TEKTON_CLI_VERSION=0.4.0
+
 USER root
+
+RUN mkdir -p ${STAGE_DIR} && cd ${STAGE_DIR} && \
+    curl -OL https://github.com/knative/client/releases/download/v${KNATIVE_CLI_VERSION}/kn-linux-amd64 && \
+    chmod a+x kn-linux-amd64 && mv kn-linux-amd64 ${BIN_DIR}/kn && \
+    curl -OL https://github.com/tektoncd/cli/releases/download/v${TEKTON_CLI_VERSION}/tkn_${TEKTON_CLI_VERSION}_linux_x86_64.tar.gz && \
+    tar xvzf tkn_${TEKTON_CLI_VERSION}_linux_x86_64.tar.gz && mv tkn ${BIN_DIR} && \
+    curl -OL https://storage.googleapis.com/hey-release/hey_linux_amd64 && \
+    chmod a+x hey_linux_amd64 && mv hey_linux_amd64 ${BIN_DIR}/hey
+    
+RUN rm -rf ${STAGE_DIR}
 
 COPY . /tmp/src
 

@@ -11,7 +11,9 @@ autoscaling.knative.dev/minScale: "1"
 autoscaling.knative.dev/maxScale: "10"
 ```
 
-This is the descriptor `customer-autoscale-request.yml`:
+This is the descriptor `customer-autoscale-requests.yml`:
+
+> VERSION environment variable changed to v2
 
 ```yaml
 apiVersion: serving.knative.dev/v1alpha1 # Current version of Knative
@@ -58,7 +60,7 @@ oc get revisions -n labs-%userid%
 Let's generate some load against the customer service:
 
 ```execute-1
-ab -n 1000 -c 100 http://customer.labs-%userid%.%cluster_subdomain%/
+hey -c 100 -z 20s http://customer.labs-%userid%.%cluster_subdomain%/
 ```
 
 And have a look to the pods.

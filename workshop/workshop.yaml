@@ -6,5 +6,6 @@ modules:
     - setup-environment
     - exercises/01-deploy-all-services
     - exercises/02-autoscale-requests
-    - exercises/01-sample-content
+    - exercises/03-autoscale-cpu
+    - exercises/04-traffic-split
     - workshop-summary
