@@ -9,4 +9,6 @@ modules:
     - exercises/03-autoscale-cpu
     - exercises/04-traffic-split
     - exercises/05-eventing-send-curl
+    - exercises/06-eventing-kafka-source-direct
+    - exercises/07-eventing-kafka-source-to-channel
     - workshop-summary
