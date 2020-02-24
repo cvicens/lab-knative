@@ -1,6 +1,6 @@
 Now let's imagine you want deploy a new version and split traffic between the old one and the new one.
 
-Pay attention to these annotations they define howwe want to splif traffic:
+Pay attention to these annotations they define how we want to splif traffic:
 
 > **EXPLAIN!!!!**
 
@@ -292,7 +292,7 @@ curl -v http://latest-customer.labs-%userid%.%cluster_subdomain%/
 Now, why don't we generate some load against the customer service. Pay attention because if the split is 50/50 between v3 and v4 there should be equal number of v3's and v4's among the answers.
 
 ```execute-1
-for i in $(seq 1 10); do curl -v http://customer.labs-%userid%.%cluster_subdomain%/; done
+for i in $(seq 1 10); do curl http://customer.labs-%userid%.%cluster_subdomain%/; done
 ```
 
 In the meantime have a look to the pods, you'll see pods of both versions v3 and v4 of our Customer service.

@@ -1,4 +1,4 @@
-name: Markdown Sample
+name: Knative Intro - Serving and Eventing
 
 modules:
     activate:

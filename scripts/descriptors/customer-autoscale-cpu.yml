@@ -10,7 +10,7 @@ spec:
         # Standard Kubernetes CPU-based autoscaling.
         autoscaling.knative.dev/class: hpa.autoscaling.knative.dev
         autoscaling.knative.dev/metric: cpu
-        autoscaling.knative.dev/target: "70"
+        autoscaling.knative.dev/target: "45"
         autoscaling.knative.dev/minScale: "1"
         autoscaling.knative.dev/maxScale: "10"
     spec:
@@ -22,6 +22,12 @@ spec:
           volumeMounts:
             - name: configuration
               mountPath: /deployments/config
+          livenessProbe:
+            httpGet:
+              path: /health
+          readinessProbe:
+            httpGet:
+              path: /health
       volumes:
         - name: configuration
           configMap:

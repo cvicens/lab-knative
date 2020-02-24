@@ -1,6 +1,6 @@
 Now let's imagine we want to define an autoscale rule for Customer service based on cpu usage.
 
-- 10 requests maximum
+- CPU usage below or equals to 45%
 - 1 to 10 pods
 
 Pay attention to these annotations, this time they have to do with cpu usage:
@@ -10,7 +10,7 @@ Pay attention to these annotations, this time they have to do with cpu usage:
 ```yaml
 autoscaling.knative.dev/class: hpa.autoscaling.knative.dev
 autoscaling.knative.dev/metric: cpu
-autoscaling.knative.dev/target: "70"
+autoscaling.knative.dev/target: "45"
 autoscaling.knative.dev/minScale: "1"
 autoscaling.knative.dev/maxScale: "10"
 ```
@@ -32,7 +32,7 @@ spec:
         # Standard Kubernetes CPU-based autoscaling.
         autoscaling.knative.dev/class: hpa.autoscaling.knative.dev
         autoscaling.knative.dev/metric: cpu
-        autoscaling.knative.dev/target: "70"
+        autoscaling.knative.dev/target: "45"
         autoscaling.knative.dev/minScale: "1"
         autoscaling.knative.dev/maxScale: "10"
     spec:
@@ -64,10 +64,21 @@ Again, as we changed a service (knative) a new revision is created, let's have a
 oc get revisions -n labs-%userid%
 ```
 
+Let's test the customer service:
+
+> Be patient, some times it takes a bit for the service mesh to be set up... so if you get an error like:
+> ```
+> **HTTP/1.0 503 Service Unavailable**, wait and try again later ;-)
+> ```
+
+```execute-1
+curl -v http://customer.labs-%userid%.%cluster_subdomain%
+```
+
 Let's generate some load against the customer service:
 
 ```execute-1
-hey -c 100 -z 20s http://customer.labs-%userid%.%cluster_subdomain%/
+hey -c 50 -z 20s http://customer.labs-%userid%.%cluster_subdomain%/
 ```
 
 Check hpa metrics:

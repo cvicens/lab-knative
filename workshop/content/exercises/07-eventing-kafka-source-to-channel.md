@@ -8,7 +8,7 @@ First we need to update the KafkaSource we used before so that it point to the d
 
 > **Pay special attention to:**
 > 
-> * **spec->sink:** becsuase now it's pointing to the `default` broker
+> * **spec->sink:** because now it's pointing to the `default` broker
 > * **spec-> bootstrapServers and topics:** no changes with regards to the previous lab
 
 
@@ -79,7 +79,14 @@ Finally let's have a quick look to the logs:
 oc logs -f $(oc get pod -n labs-%userid% | grep logevents | awk '{print $1}') -c user-container -n labs-%userid%
 ```
 
-Ctrl+C when you're done with testing the trigger.
+Ctrl+C (both consoles) when you're done with testing the trigger.
+
+Upper:
+
+```execute-2
+<ctrl+c>
+```
+Lower:
 
 ```execute-2
 <ctrl+c>

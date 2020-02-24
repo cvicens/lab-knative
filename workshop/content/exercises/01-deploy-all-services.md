@@ -106,16 +106,38 @@ Instead of deploying all these elements directly with `apply -f` we're going to 
 bash ./scripts/deploy-all-services.sh labs-%userid% %cluster_subdomain%
 ```
 
-Let's test the customer service:
-
-```execute-1
-curl -v http://customer.labs-%userid%.%cluster_subdomain%
-```
+Previous command creates all the object needed to deploy 3 serverless services.
 
 Whenever you create a service (knative) a revision is created, let's have a look:
 
 ```execute-2
 oc get revisions -n labs-%userid%
+```
+
+You should see something like:
+
+```shell
+NAME                CONFIG NAME      K8S SERVICE NAME    GENERATION   READY   REASON
+customer-v1         customer         customer-v1         1            True
+preference-v1       preference       preference-v1       1            True
+recommendation-v1   recommendation   recommendation-v1   1            True
+```
+
+Also have a look to the routes generated:
+
+```execute-2
+kn route list -n labs-%userid%
+```
+
+Let's test the customer service:
+
+> Be patient, some times it takes a bit for the service mesh to be set up... so if you get an error like:
+> ```
+> **HTTP/1.0 503 Service Unavailable**, wait and try again later ;-)
+> ```
+
+```execute-1
+curl -v http://customer.labs-%userid%.%cluster_subdomain%
 ```
 
 And have a look to the pods created automagically by knative.
@@ -125,3 +147,7 @@ watch oc get pod -n labs-%userid%
 ```
 
 Ctrl+C to stop the watch command.
+
+```execute-2
+<ctrl+c>
+```

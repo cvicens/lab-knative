@@ -23,7 +23,7 @@ cat $KNATIVE_LAB/customer-autoscale.yml | NAMESPACE=$(echo $APPS_NAMESPACE) envs
 echo ""
 echo " **************************************************************************************************************************** "
 echo ""
-echo "    Test customer service: hey -c 100 -z 20s http://customer.$APPS_NAMESPACE.$SUBDOMAIN                                                      "
+echo "    Test customer service: hey -c 50 -z 20s http://customer.$APPS_NAMESPACE.$SUBDOMAIN                                                      "
 echo ""
 echo " **************************************************************************************************************************** "
 echo ""

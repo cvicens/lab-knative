@@ -6,12 +6,12 @@ Have another look to the next diagram this time pay attention to path ②.
 
 First we need to create direct KafkaSource that sends events directly to our *logevents* Knative Service (ksvc).
 
-> By the way (jus in case you were wondering)... we can create a KafkaSource object because an administrator has installed the Knative Kafka Source operator previously for us.
+> By the way (just in case you were wondering)... we can create a KafkaSource object because an administrator has installed the Knative Kafka Source operator previously for us.
 > As you can imagine a Kafka cluster has been installed before you can run this lab specifically in namespace `kafka`.
 
 > **Pay special attention to:**
 > 
-> * **spec->sink:** becsuase it's pointing directly to a service
+> * **spec->sink:** because it's pointing directly to a service
 > * **spec-> bootstrapServers and topics:** because they point to the source of events in Kafka
 
 
@@ -61,7 +61,14 @@ Finally let's have a quick look to the logs:
 oc logs -f $(oc get pod -n labs-%userid% | grep logevents | awk '{print $1}') -c user-container -n labs-%userid%
 ```
 
-Ctrl+C when you're done with testing the trigger.
+Ctrl+C (both consoles) when you're done with testing the trigger.
+
+Upper:
+
+```execute-2
+<ctrl+c>
+```
+Lower:
 
 ```execute-2
 <ctrl+c>

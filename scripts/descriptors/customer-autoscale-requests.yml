@@ -7,7 +7,6 @@ spec:
     metadata:
       name: customer-v2
       annotations:
-        sidecar.istio.io/inject: "true"
         # Target 10 in-flight-requests per pod.
         autoscaling.knative.dev/target: "10"
         autoscaling.knative.dev/minScale: "1"

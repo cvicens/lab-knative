@@ -97,7 +97,7 @@
 
 			Test
 
-			hey -c 100 -z 20s http://customer.labs.apps.cluster.sandbox453.opentlc.com
+			hey -c 50 -z 20s http://customer.labs.apps.cluster.sandbox453.opentlc.com
 	
 			Stop and wait (1.20seg) for pod to be terminating.... then, test again and see it going back to live
 
