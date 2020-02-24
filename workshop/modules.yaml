@@ -32,6 +32,8 @@ modules:
         name: Autoscale Based On CPU
     exercises/04-traffic-split:
       name: Split Traffic
+    exercises/05-eventing-send-curl:
+      name: Send Event With Curl
     exercises/01-sample-content:
         name: Sample Content
     workshop-summary:

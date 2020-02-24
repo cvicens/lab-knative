@@ -78,7 +78,7 @@ Check hpa metrics:
 watch -n2 oc get hpa customer-v3 -n labs-%userid% 
 ```
 
-Please, Ctrl+C.
+Please, Ctrl+C to stop watching.
 
 ```execute-2
 <ctrl+c>

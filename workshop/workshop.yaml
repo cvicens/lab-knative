@@ -8,4 +8,5 @@ modules:
     - exercises/02-autoscale-requests
     - exercises/03-autoscale-cpu
     - exercises/04-traffic-split
+    - exercises/05-eventing-send-curl
     - workshop-summary
