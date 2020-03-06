@@ -1,0 +1,146 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: lab-installer
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - endpoints
+  - persistentvolumeclaims
+  - events
+  - configmaps
+  - secrets
+  - namespaces
+  - limitranges
+  - serviceaccounts 
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - replicasets
+  - statefulsets
+  verbs:
+  - '*'
+- apiGroups:
+  - operators.coreos.com
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - integreatly.org
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - route.openshift.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - org.eclipse.che
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - packages.operators.coreos.com
+  resources:
+  - '*'
+  verbs:
+  - 'get'
+- apiGroups:
+  - logging.openshift.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - '*'
+- apiGroups:
+  - launcher.fabric8.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - serving.knative.dev
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - eventing.knative.dev
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - oauth.openshift.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - camel.apache.org
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - kafka.strimzi.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - image.openshift.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - apps.openshift.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - template.openshift.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+
+
+
+
+  
+  
+
+
+  

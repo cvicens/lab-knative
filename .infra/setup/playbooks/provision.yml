@@ -1,0 +1,62 @@
+- name: cloudnative-workshop-apb playbook to provision the application
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    openshift_user: 
+    openshift_password: 
+    openshift_token:
+    openshift_master_url: 
+    openshift_user_password:
+    infrasvcs_adm_user: adminuser
+    infrasvcs_adm_pwd: adminpwd
+    kamel_demos_namespace: "camel-k-demos"
+
+  roles:
+  - role: ansible.kubernetes-modules
+    install_python_requirements: no
+
+  tasks:    
+  - name: extract app route suffix from openshift-console
+    block:
+      - shell: "oc get route console -n openshift-console -o 'jsonpath={.spec.host}'"
+        register: console_route
+      - set_fact:
+          console_url: "https://{{ console_route.stdout }}"
+          apps_hostname_suffix: "{{ console_route.stdout |regex_replace('^console-openshift-console\\.(.*)$', '\\1') }}"
+    tags: always
+
+  - name: extract oauth route
+    block:
+      - shell: "oc get route oauth-openshift -n openshift-authentication -o 'jsonpath={.spec.host}'"
+        register: oauth_route
+      - set_fact:
+          oauth_url: "https://{{ oauth_route.stdout }}"
+    tags: always
+
+  - name: delete project quota
+    shell: "oc delete limitrange --all -n {{ infra_namespace }}"
+    ignore_errors: true
+    tags: always
+
+  # deploy pipelines
+  - import_role:
+      name: cnw_pipelines
+    tags: tekton
+  
+  # deploy kafka operator
+  - import_role:
+      name: cnw_kafka
+    tags: kafka
+
+  # deploy kamel
+  - import_role:
+      name: cnw_kamel
+    vars:
+      project_name: "{{ kamel_demos_namespace }}"
+    tags: kamel
+
+  # deploy serverless
+  - import_role:
+      name: cnw_serverless
+    tags: serverless

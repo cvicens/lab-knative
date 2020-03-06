@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: lab-installer
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      serviceAccountName: lab-installer
+      containers:
+      - name: worker
+        image: quay.io/cvicensa/lab-installer:4.3
+        env:
+        - name: INFRA_NAMESPACE
+          value: "lab-quarkus"
+        - name: KUBECONFIG
+          value: "/tmp/config"
+        command:
+        - sh
+        - -c
+        - ./preparelab_cnw.sh -n ${INFRA_NAMESPACE}
+        imagePullPolicy: Always
+      restartPolicy: Never
