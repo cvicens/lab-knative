@@ -1,0 +1,5 @@
+project_name: labs-infra
+project_desc: ''
+project_display_name: ''
+
+kafka_cluster: knative-cluster

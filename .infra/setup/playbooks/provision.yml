@@ -11,6 +11,7 @@
     infrasvcs_adm_user: adminuser
     infrasvcs_adm_pwd: adminpwd
     kamel_demos_namespace: "camel-k-demos"
+    labs_infra_namespace: "labs-infra"
 
   roles:
   - role: ansible.kubernetes-modules
@@ -60,3 +61,10 @@
   - import_role:
       name: cnw_serverless
     tags: serverless
+
+  # deploy lab infra
+  - import_role:
+      name: lab_infra
+    vars:
+      project_name: "{{ labs_infra_namespace }}"
+    tags: lab

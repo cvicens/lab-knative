@@ -1,0 +1,66 @@
+---
+
+# Create lab infra namespace
+- name: Create labs_infra namespace
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ project_name }}"
+        annotations:
+          openshift.io/description: "{{ project_desc }}"
+          openshift.io/display-name: "{{ project_display_name }}"
+
+# Create kafka cluster
+- name: Create kafka cluster
+  k8s:
+    state: present
+    definition:
+      apiVersion: kafka.strimzi.io/v1beta1
+      kind: Kafka
+      metadata:
+        name: "{{ kafka_cluster }}"
+        namespace: "{{ project_name }}"
+      spec:
+        kafka:
+          version: 2.3.0
+          replicas: 3
+          listeners:
+            plain: {}
+            tls: {}
+          config:
+            offsets.topic.replication.factor: 3
+            transaction.state.log.replication.factor: 3
+            transaction.state.log.min.isr: 2
+            log.message.format.version: '2.3'
+          storage:
+            type: ephemeral
+        zookeeper:
+          replicas: 3
+          storage:
+            type: ephemeral
+        entityOperator:
+          topicOperator: {}
+          userOperator: {}
+
+## Create kafka cluster
+#- name: Create kafka cluster
+#  k8s:
+#    state: present
+#    definition:
+#      apiVersion: kafka.strimzi.io/v1beta1
+#      kind: KafkaTopic
+#      metadata:
+#        name: eventing
+#        labels:
+#          strimzi.io/cluster: knative-demo
+#        namespace: "{{ project_name }}"
+#      spec:
+#        partitions: 10
+#        replicas: 3
+#        config:
+#          retention.ms: 604800000
+#          segment.bytes: 1073741824
+    

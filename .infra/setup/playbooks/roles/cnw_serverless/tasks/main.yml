@@ -18,6 +18,25 @@
         name: "{{ serverless_subsription_name }}"
         source: "{{ serverless_subsription_source }}"
         sourceNamespace: "{{ serverless_subsription_source_namespace }}"
+        startingCSV: "{{ serverless_subsription_starting_csv }}"
+
+# Approve install plan for serverless operator
+## Find the plan
+- name: wait for serverless csv to be ready
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ serverless_subsription_csv_root }}\")) | .metadata.name'"
+  register: result
+  until: (result.stdout|length > 0)
+  retries: 6
+  delay: 15
+
+- set_fact:
+    serverless_installplan: "{{ result.stdout }}"
+
+## Approve the plan
+- name: patch serverless install plan
+  shell: "oc patch installplan/{{ serverless_installplan }} -n {{ all_namespaces_project_name }} --type='json' -p='[{\"op\": \"add\", \"path\": \"/spec/approved\", \"value\":true}]'"
+  register: result
+  until: (result.stdout|length > 0)
 
 # Checking status of the operator
 - name: wait for serverless csv to be ready
@@ -110,8 +129,27 @@
         name: "{{ knative_eventing_subsription_name }}"
         source: "{{ knative_eventing_subsription_source }}"
         sourceNamespace: "{{ knative_eventing_subsription_source_namespace }}"
+        startingCSV: "{{ knative_eventing_subsription_starting_csv }}"
 
-# Checking status of the operator
+# Approve install plan for knative eventing operator
+## Find the plan
+- name: wait for knative eventing csv to be ready
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ knative_eventing_subsription_csv_root }}\")) | .metadata.name'"
+  register: result
+  until: (result.stdout|length > 0)
+  retries: 6
+  delay: 15
+
+- set_fact:
+    eventing_installplan: "{{ result.stdout }}"
+
+## Approve the plan
+- name: patch kafka install plan
+  shell: "oc patch installplan/{{ eventing_installplan }} -n {{ all_namespaces_project_name }} --type='json' -p='[{\"op\": \"add\", \"path\": \"/spec/approved\", \"value\":true}]'"
+  register: result
+  until: (result.stdout|length > 0)
+
+# Checking status of the knative eventing operator
 - name: wait for knative eventing csv to be ready
   shell: "oc get csv -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.metadata.name | contains(\"{{ knative_eventing_subsription_csv_root }}\")) | .status.phase'"
   register: result
@@ -124,5 +162,93 @@
   shell: "oc get knativeeventing/knative-eventing -n knative-eventing --template={% raw %}'{{range .status.conditions}}{{if and (eq .type \"Ready\") (eq .status \"True\") }}Ready{{end}}{{end}}'{% endraw %}"
   register: result
   until: result.stdout == 'Ready'
+  retries: 30
+  delay: 30
+
+# Deploy Knative Kafka Operator
+- name: Create a Subscription of the Knative Kafka operator
+  k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: "{{ knative_kafka_subsription_name }}"
+        namespace: "{{ all_namespaces_project_name }}"
+      spec:
+        channel: "{{ knative_kafka_subsription_channel }}"
+        installPlanApproval: "{{ knative_kafka_subsription_install_plan_approval }}"
+        name: "{{ knative_kafka_subsription_name }}"
+        source: "{{ knative_kafka_subsription_source }}"
+        sourceNamespace: "{{ knative_kafka_subsription_source_namespace }}"
+        startingCSV: "{{ knative_kafka_subsription_starting_csv }}"
+
+# Approve install plan for kafka operator
+## Find the plan
+- name: wait for knative kafka csv to be ready
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ knative_kafka_subsription_csv_root }}\")) | .metadata.name'"
+  register: result
+  until: (result.stdout|length > 0)
+  retries: 6
+  delay: 15
+
+- set_fact:
+    kafka_installplan: "{{ result.stdout }}"
+
+## Approve the plan
+- name: patch kafka install plan
+  shell: "oc patch installplan/{{ kafka_installplan }} -n {{ all_namespaces_project_name }} --type='json' -p='[{\"op\": \"add\", \"path\": \"/spec/approved\", \"value\":true}]'"
+  register: result
+  until: (result.stdout|length > 0)
+
+# Checking status of the operator
+- name: wait for knative kafka csv to be ready
+  shell: "oc get csv -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.metadata.name | contains(\"{{ knative_kafka_subsription_csv_root }}\")) | .status.phase'"
+  register: result
+  until: result.stdout.find("Succeeded") != -1
+  retries: 30
+  delay: 30
+
+# Deploy Knative Camel Operator
+- name: Create a Subscription of the Knative Camel operator
+  k8s:
+    state: present
+    definition:
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: Subscription
+      metadata:
+        name: "{{ knative_camel_subsription_name }}"
+        namespace: "{{ all_namespaces_project_name }}"
+      spec:
+        channel: "{{ knative_camel_subsription_channel }}"
+        installPlanApproval: "{{ knative_camel_subsription_install_plan_approval }}"
+        name: "{{ knative_camel_subsription_name }}"
+        source: "{{ knative_camel_subsription_source }}"
+        sourceNamespace: "{{ knative_camel_subsription_source_namespace }}"
+        startingCSV: "{{ knative_camel_subsription_starting_csv }}"
+
+# Approve install plan for camel operator
+## Find the plan
+- name: wait for knative camel csv to be ready
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ knative_camel_subsription_csv_root }}\")) | .metadata.name'"
+  register: result
+  until: (result.stdout|length > 0)
+  retries: 6
+  delay: 15
+
+- set_fact:
+    camel_installplan: "{{ result.stdout }}"
+
+## Approve the plan
+- name: patch camel install plan
+  shell: "oc patch installplan/{{ camel_installplan }} -n {{ all_namespaces_project_name }} --type='json' -p='[{\"op\": \"add\", \"path\": \"/spec/approved\", \"value\":true}]'"
+  register: result
+  until: (result.stdout|length > 0)
+
+# Checking status of the operator
+- name: wait for knative camel csv to be ready
+  shell: "oc get csv -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.metadata.name | contains(\"{{ knative_camel_subsription_csv_root }}\")) | .status.phase'"
+  register: result
+  until: result.stdout.find("Succeeded") != -1
   retries: 30
   delay: 30

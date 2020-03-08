@@ -19,6 +19,24 @@
         sourceNamespace: "{{ kafka_subsription_source_namespace }}"
         startingCSV: "{{ kafka_subsription_starting_csv }}"
 
+# Approve install plan for kafka operator
+## Find the plan
+- name: wait for kafka csv to be ready
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ knative_kafka_subsription_csv_root }}\")) | .metadata.name'"
+  register: result
+  until: (result.stdout|length > 0)
+  retries: 6
+  delay: 15
+
+- set_fact:
+    kafka_installplan: "{{ result.stdout }}"
+
+## Approve the plan
+- name: patch kafka install plan
+  shell: "oc patch installplan/{{ kafka_installplan }} -n {{ all_namespaces_project_name }} --type='json' -p='[{\"op\": \"add\", \"path\": \"/spec/approved\", \"value\":true}]'"
+  register: result
+  until: (result.stdout|length > 0)
+
 # Checking status of the operator
 - name: wait for kafka csv to be ready
   shell: "oc get csv -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.metadata.name | contains(\"{{ kafka_subsription_csv_root }}\")) | .status.phase'"

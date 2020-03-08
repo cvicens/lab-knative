@@ -17,3 +17,21 @@ knative_eventing_subsription_source_namespace: openshift-marketplace
 knative_eventing_subsription_starting_csv: knative-eventing-operator.v0.12.0
 
 knative_eventing_subsription_csv_root: knative-eventing-operator
+
+knative_kafka_subsription_channel: alpha
+knative_kafka_subsription_install_plan_approval: Manual
+knative_kafka_subsription_name: knative-kafka-operator
+knative_kafka_subsription_source: community-operators
+knative_kafka_subsription_source_namespace: openshift-marketplace
+knative_kafka_subsription_starting_csv: knative-kafka-operator.v0.12.1
+
+knative_kafka_subsription_csv_root: knative-kafka-operator
+
+knative_camel_subsription_channel: alpha
+knative_camel_subsription_install_plan_approval: Manual
+knative_camel_subsription_name: knative-camel-operator
+knative_camel_subsription_source: community-operators
+knative_camel_subsription_source_namespace: openshift-marketplace
+knative_camel_subsription_starting_csv: knative-camel-operator.v0.12.1
+
+knative_camel_subsription_csv_root: knative-camel-operator

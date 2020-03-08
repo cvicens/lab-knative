@@ -19,6 +19,24 @@
         sourceNamespace: "{{ pipelines_subsription_source_namespace }}"
         startingCSV: "{{ pipelines_subsription_starting_csv }}"
 
+# Approve install plan for pipelines operator
+## Find the plan
+- name: wait for pipelines csv to be ready
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ pipelines_subsription_csv_root }}\")) | .metadata.name'"
+  register: result
+  until: (result.stdout|length > 0)
+  retries: 6
+  delay: 15
+
+- set_fact:
+    pipelines_installplan: "{{ result.stdout }}"
+
+## Approve the plan
+- name: patch pipelines install plan
+  shell: "oc patch installplan/{{ pipelines_installplan }} -n {{ all_namespaces_project_name }} --type='json' -p='[{\"op\": \"add\", \"path\": \"/spec/approved\", \"value\":true}]'"
+  register: result
+  until: (result.stdout|length > 0)
+
 # Checking status of the operator
 - name: wait for pipelines csv to be ready
   shell: "oc get csv -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.metadata.name | contains(\"{{ pipelines_subsription_csv_root }}\")) | .status.phase'"

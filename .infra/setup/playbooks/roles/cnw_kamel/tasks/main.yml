@@ -1,8 +1,8 @@
 ---
 ## Install
 
-# Deploy Kafka using an operator
-- name: Create a Subscription of the kafka operator
+# Deploy kamel using an operator
+- name: Create a Subscription of the kamel operator
   k8s:
     state: present
     definition:
@@ -18,6 +18,24 @@
         source: "{{ kamel_subsription_source }}"
         sourceNamespace: "{{ kamel_subsription_source_namespace }}"
         startingCSV: "{{ kamel_subsription_starting_csv }}"
+
+# Approve install plan for kamel operator
+## Find the plan
+- name: wait for kamel csv to be ready
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ kamel_subsription_csv_root }}\")) | .metadata.name'"
+  register: result
+  until: (result.stdout|length > 0)
+  retries: 6
+  delay: 15
+
+- set_fact:
+    kamel_installplan: "{{ result.stdout }}"
+
+## Approve the plan
+- name: patch kamel install plan
+  shell: "oc patch installplan/{{ kamel_installplan }} -n {{ all_namespaces_project_name }} --type='json' -p='[{\"op\": \"add\", \"path\": \"/spec/approved\", \"value\":true}]'"
+  register: result
+  until: (result.stdout|length > 0)
 
 # Checking status of the operator
 - name: wait for kamel csv to be ready
