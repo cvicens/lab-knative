@@ -11,3 +11,9 @@ Now let's create a project to deploy our knative services (ksvc).
 ```execute
 oc new-project labs-%userid%
 ```
+
+If you have already created the project you can always set it as default running this command:
+
+```execute
+oc project labs-%userid%
+```

@@ -3,5 +3,5 @@ kind: KnativeEventingKafka
 metadata:
   name: knative-demo-eventing-kafka
 spec:
-  bootstrapServers: knative-demo-kafka-bootstrap.kafka:9092
+  bootstrapServers: knative-cluster-kafka-bootstrap.labs-infra:9092
   setAsDefaultChannelProvisioner: yes

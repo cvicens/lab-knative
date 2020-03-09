@@ -19,7 +19,7 @@ metadata:
   name: kafka-source
 spec:
   consumerGroup: knative-group
-  bootstrapServers: knative-demo-kafka-bootstrap.kafka:9092 #note the kafka namespace
+  bootstrapServers: knative-cluster-kafka-bootstrap.labs-infra:9092 #note the kafka namespace
   topics: eventing
   sink:
     apiVersion: eventing.knative.dev/v1alpha1
@@ -35,13 +35,13 @@ Let's test it by sending messages to our topic in kafka:
 
 ```execute-1
 oc -n labs-%userid% delete pod kafka-producer
-oc -n labs-%userid% run kafka-producer -ti --image=strimzi/kafka:0.14.0-kafka-2.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list knative-demo-kafka-bootstrap.kafka:9092 --topic eventing
+oc -n labs-%userid% run kafka-producer -ti --image=strimzi/kafka:0.14.0-kafka-2.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list knative-cluster-kafka-bootstrap.labs-infra:9092 --topic eventing
 ```
 
 Now you can send events from the prompt. Copy the next text and paste it in the console where the kafka-producer is running.
 
 ```copy
-{"message" : "Hi guys from kafka source through channel!!"}
+{"message" : "Hi guys from kafka source through channel for user%userid%!!"}
 ```
 
 Let's check if there's a new pod being created...
@@ -83,7 +83,7 @@ Ctrl+C (both consoles) when you're done with testing the trigger.
 
 Upper:
 
-```execute-2
+```execute-1
 <ctrl+c>
 ```
 Lower:

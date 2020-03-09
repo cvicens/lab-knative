@@ -1,0 +1,14 @@
+- from:
+    uri: "timer:tick"  #1 Camel producer URI
+    parameters:        #2 Setting up the producer
+      period: "10s"
+    steps:             #3 Flow 
+      - set-body:      #4 Sets the body of the OUT message
+          constant: "Welcome to Apache Camel K"
+      - set-header:    #5 Sets headers
+          name: ContentType
+          simple: text/plain
+      - transform:     #6 Apply transformations to the body
+          simple: "${body.toUpperCase()}"
+      - to:            #7 Sends out the message
+          uri: "log:info?multiline=true&showAll=true"

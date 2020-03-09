@@ -38,8 +38,11 @@ modules:
       name: Using a Kafka Source Directly
     exercises/07-eventing-kafka-source-to-channel:
       name: Kafka Source to Channel
-    exercises/01-sample-content:
-        name: Sample Content
+    exercises/08-camel-serving:
+      name: Camel with Knative Serving
+    exercises/09-camel-eventing:
+      name: Camel with Knative Eventing
+
     workshop-summary:
         name: Workshop Summary
         exit_sign: Finish Workshop

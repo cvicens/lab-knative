@@ -45,6 +45,39 @@
           topicOperator: {}
           userOperator: {}
 
+# Create kafka Topic 
+- name: Create kafka Topic eventing
+  k8s:
+    state: present
+    definition:
+      apiVersion: kafka.strimzi.io/v1beta1
+      kind: KafkaTopic
+      metadata:
+        name: eventing
+        labels:
+          strimzi.io/cluster: "{{ kafka_cluster }}"
+        namespace: "{{ project_name }}"
+      spec:
+        partitions: 10
+        replicas: 3
+        config:
+          retention.ms: 604800000
+          segment.bytes: 1073741824
+
+# Create kafka eventing ==> This generates the CRDs to create for instance KafkaSources
+- name: Create kafka eventing
+  k8s:
+    state: present
+    definition:
+      apiVersion: eventing.knative.dev/v1alpha1
+      kind: KnativeEventingKafka
+      metadata:
+        name: knative-cluster-eventing-kafka
+        namespace: knative-eventing
+      spec:
+        bootstrapServers: knative-cluster-kafka-bootstrap.labs-infra:9092
+        setAsDefaultChannelProvisioner: yes
+
 ## Create kafka cluster
 #- name: Create kafka cluster
 #  k8s:

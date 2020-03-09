@@ -88,7 +88,7 @@ oc apply -f ./scripts/descriptors/demo-trigger-filter-simplesource.yml -n labs-%
 Test our serverless service sending events directly to the default broker:
 
 ```execute-1
-curl -v http://default-broker-labs-%userid%.%cluster_subdomain%/ -H "Ce-specversion: 1.0" -H "Ce-Type: dev.knative.demo" -H "Ce-Id: 45a8b444-3213-4758-be3f-540bf93f85ff" -H "Ce-Source: dev.knative.demo/simplesource" -H 'Content-Type: application/json' -d '{ "message": "Hi there!!" }'
+curl -v http://default-broker-labs-%userid%.%cluster_subdomain%/ -H "Ce-specversion: 1.0" -H "Ce-Type: dev.knative.demo" -H "Ce-Id: 45a8b444-3213-4758-be3f-540bf93f85ff" -H "Ce-Source: dev.knative.demo/simplesource" -H "Ce-User: user%userid%" -H 'Content-Type: application/json' -d '{ "message": "Hi there!!" }'
 ```
 
 You should receive a 202 response code as in here.

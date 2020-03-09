@@ -11,4 +11,6 @@ modules:
     - exercises/05-eventing-send-curl
     - exercises/06-eventing-kafka-source-direct
     - exercises/07-eventing-kafka-source-to-channel
+    - exercises/08-camel-serving
+    - exercises/09-camel-eventing
     - workshop-summary

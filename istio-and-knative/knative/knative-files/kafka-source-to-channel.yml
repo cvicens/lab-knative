@@ -4,7 +4,7 @@ metadata:
   name: kafka-source
 spec:
   consumerGroup: knative-group
-  bootstrapServers: knative-demo-kafka-bootstrap.kafka:9092 #note the kafka namespace
+  bootstrapServers: knative-cluster-kafka-bootstrap.labs-infra:9092 #note the kafka namespace
   topics: eventing
   sink:
     apiVersion: eventing.knative.dev/v1alpha1

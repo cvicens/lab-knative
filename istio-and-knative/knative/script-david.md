@@ -41,7 +41,7 @@ kind: KnativeEventingKafka
 metadata:
   name: knative-demo-eventing-kafka
 spec:
-  bootstrapServers: knative-demo-kafka-bootstrap.kafka:9092
+  bootstrapServers: knative-cluster-kafka-bootstrap.labs-infra:9092
   setAsDefaultChannelProvisioner: yes
 
 
@@ -49,7 +49,7 @@ spec:
 
 
 
-oc -n kafka run kafka-producer -ti --image=strimzi/kafka:0.14.0-kafka-2.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list knative-demo-kafka-bootstrap.kafka:9092 --topic eventing
+oc -n kafka run kafka-producer -ti --image=strimzi/kafka:0.14.0-kafka-2.3.0 --rm=true --restart=Never -- bin/kafka-console-producer.sh --broker-list knative-cluster-kafka-bootstrap.labs-infra:9092 --topic eventing
 
 > {"message" : "Hi guys!!"}
 

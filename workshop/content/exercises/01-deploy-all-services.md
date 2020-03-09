@@ -110,6 +110,11 @@ Previous command creates all the object needed to deploy 3 serverless services.
 
 Whenever you create a service (knative) a revision is created, let's have a look:
 
+> **NOTE:** if any service can't deploy please delete all three services and create them again.
+> ```copy
+> oc delete --all ksvc -n labs-%userid%
+> ```
+
 ```execute-2
 oc get revisions -n labs-%userid%
 ```
