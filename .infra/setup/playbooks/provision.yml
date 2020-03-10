@@ -50,17 +50,17 @@
       name: cnw_kafka
     tags: kafka
 
+  # deploy serverless
+  - import_role:
+      name: cnw_serverless
+    tags: serverless
+
   # deploy kamel
   - import_role:
       name: cnw_kamel
     vars:
       project_name: "{{ kamel_demos_namespace }}"
     tags: kamel
-
-  # deploy serverless
-  - import_role:
-      name: cnw_serverless
-    tags: serverless
 
   # deploy lab infra
   - import_role:
