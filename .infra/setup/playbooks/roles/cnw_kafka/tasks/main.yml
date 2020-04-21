@@ -21,8 +21,8 @@
 
 # Approve install plan for kafka operator
 ## Find the plan
-- name: wait for kafka csv to be ready
-  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ knative_kafka_subsription_csv_root }}\")) | .metadata.name'"
+- name: wait for kafka installplan
+  shell: "oc get installplan -o json -n {{ all_namespaces_project_name }} | jq -r '.items[] | select(.spec.clusterServiceVersionNames[]? | contains(\"{{ kafka_subsription_csv_root }}\")) | .metadata.name'"
   register: result
   until: (result.stdout|length > 0)
   retries: 6

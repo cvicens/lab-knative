@@ -13,7 +13,7 @@ First we need to update the KafkaSource we used before so that it point to the d
 
 
 ```yaml
-apiVersion: sources.eventing.knative.dev/v1alpha1
+apiVersion: sources.knative.dev/v1alpha1
 kind: KafkaSource
 metadata:
   name: kafka-source

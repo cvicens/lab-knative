@@ -3,7 +3,7 @@ This time we want to use Camel to create Knative Services. In order to do so, Ca
 After intalling the required operator, we still have to prepare the namespace, as follows:
 
 ```execute-1
-kamel install --cluster-setup --skip-operator-setup -n labs-%userid%
+kamel install --olm=false -n labs-%userid%
 ```
 
 Let's speed up the building time...

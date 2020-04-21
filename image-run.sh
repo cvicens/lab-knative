@@ -1,8 +1,10 @@
 #!/bin/sh
 
+. .workshop/settings.sh
+
 MYDIR="$( cd "$(dirname "$0")" ; pwd -P )"
 function usage() {
-    echo "usage: $(basename $0) [-s/--api-server api-server -b/--app-base apps.xzy.com]"
+    echo "usage: $(basename $0) [-s/--api-server api-server -b/--app-base apps.xzy.com -u/--userid]"
 }
 
 # Defaults
@@ -22,6 +24,11 @@ case $key in
     ;;
     -b|--app-base)
     APP_BASE="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -u|--userid)
+    USERID="$2"
     shift # past argument
     shift # past value
     ;;
@@ -47,9 +54,14 @@ then
   exit 1;
 fi
 
-. .workshop/settings.sh
+if [ -z "$USERID" ]
+then
+  echo "-u|--userid cannot be empty"
+  usage
+  exit 1;
+fi
 
 docker run --rm -p 10080:10080 -e CLUSTER_SUBDOMAIN=${APP_BASE} \
-  -e OCP_USERNAME=user2 -e USERID=2 -e OCP_PASSWORD=openshift \
+  -e OCP_USERNAME="user${USERID}" -e USERID="${USERID}" -e OCP_PASSWORD=openshift \
   -e KUBERNETES_SERVICE_HOST=${API_SERVER_HOST} \
   -e KUBERNETES_SERVICE_PORT=${API_SERVER_PORT} --name ${WORKSHOP_NAME} ${WORKSHOP_NAME}:${WORKSHOP_VERSION}

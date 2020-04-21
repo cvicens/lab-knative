@@ -3,7 +3,7 @@ So far we have tested Camel K alone, also with Knative Serving. So, what's left?
 If you remember we have used Eventing before, specifically we have used a source of events `KafkaSource`. Maybe you're wondering if there is an easy way to know which source are available... Indeed, please execute:
 
 ```execute-1
-oc api-resources --api-group=sources.eventing.knative.dev
+oc api-resources --api-group=sources.knative.dev
 ```
 
 Ok, let's get started. As you have already guessed we're going to use a CamelSource.
@@ -27,7 +27,7 @@ spec:
 Here is the Camel Source we're going to create. It's essentially the same code we used before but embedded in a CamelSource in `spec->source->flow`.
 
 ```yaml
-apiVersion: sources.eventing.knative.dev/v1alpha1  ①
+apiVersion: sources.knative.dev/v1alpha1  ①
 kind: CamelSource
 metadata:
   name: timed-greeter

@@ -22,8 +22,8 @@ AUTH_PASSWORD => .workshop/develop-settings.sh
 Update Workshop Scripts => git submodule update --remote
 
 ## Deploying the workshop
-
-
+./deploy-multiple.sh -c 10 --start 1 --end 10  -s https://${API_SERVER}
+./deploy-multiple.sh -c 1 --start 10 --end 10  -s https://api.cluster-gramola-ac20.gramola-ac20.example.opentlc.com:6443
 
 ## Local Development
 ./image-build.sh

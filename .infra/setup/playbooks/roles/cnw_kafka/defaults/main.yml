@@ -5,6 +5,6 @@ kafka_subsription_install_plan_approval: Manual
 kafka_subsription_name: amq-streams
 kafka_subsription_source: redhat-operators
 kafka_subsription_source_namespace: openshift-marketplace
-kafka_subsription_starting_csv: amqstreams.v1.3.0
+kafka_subsription_starting_csv: amqstreams.v1.4.0
 
 kafka_subsription_csv_root: amqstreams

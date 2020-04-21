@@ -15,7 +15,7 @@ First we need to create direct KafkaSource that sends events directly to our *lo
 > * **spec-> bootstrapServers and topics:** because they point to the source of events in Kafka
 
 ```yaml
-apiVersion: sources.eventing.knative.dev/v1alpha1
+apiVersion: sources.knative.dev/v1alpha1
 kind: KafkaSource
 metadata:
   name: kafka-source

@@ -121,6 +121,8 @@ oc get revisions -n labs-%userid%
 
 You should see something like:
 
+> **NOTE:** If you see these services in status READY=`UNKOWN` and REASON=`Deploying` please wait and retry eventually they will come up.
+
 ```shell
 NAME                CONFIG NAME      K8S SERVICE NAME    GENERATION   READY   REASON
 customer-v1         customer         customer-v1         1            True

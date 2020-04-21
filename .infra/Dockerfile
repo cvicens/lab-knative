@@ -1,8 +1,8 @@
-FROM registry.redhat.io/ubi8/ubi-minimal
+FROM registry.redhat.io/ubi8/ubi-minimal:8.1
 
 COPY content_sets_epel7.repo /etc/yum.repos.d/
 
-ENV OC_CLI_VERSION 4.1.14
+ENV OC_CLI_VERSION=4.1.14 KAMEL_CLI_VERSION=1.0.0-RC2
 
 RUN microdnf install -y bash git gzip tar findutils jq python3-six python3-pip rsync openssh-clients
 
@@ -28,6 +28,10 @@ WORKDIR /tmp
 RUN curl -OL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_CLI_VERSION}/openshift-client-linux-${OC_CLI_VERSION}.tar.gz && \
     tar xvzf openshift-client-linux-${OC_CLI_VERSION}.tar.gz -C /usr/local/bin oc && \
     rm openshift-client-linux-${OC_CLI_VERSION}.tar.gz
+
+RUN curl -OL https://github.com/apache/camel-k/releases/download/${KAMEL_CLI_VERSION}/camel-k-client-${KAMEL_CLI_VERSION}-linux-64bit.tar.gz && \
+    tar xvzf camel-k-client-${KAMEL_CLI_VERSION}-linux-64bit.tar.gz && chmod a+x kamel && mv kamel /usr/local/bin && \
+    rm camel-k-client-${KAMEL_CLI_VERSION}-linux-64bit.tar.gz
 
 RUN mkdir -p /usr/share/ansible/openshift \
              /etc/ansible /opt/workshop /opt/ansible \

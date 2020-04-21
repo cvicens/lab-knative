@@ -9,7 +9,7 @@ spec:
       serviceAccountName: lab-installer
       containers:
       - name: worker
-        image: quay.io/cvicensa/lab-installer:4.3
+        image: quay.io/cvicensa/lab-knative-installer:4.3
         env:
         - name: INFRA_NAMESPACE
           value: "lab-quarkus"
